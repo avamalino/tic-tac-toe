@@ -1,5 +1,7 @@
 #include "TicTacToe.h"
+#include "Logger.h"
 #include <string>
+#include <algorithm>
 #include <random>
 // -----------------------------------------------------------------------------
 // TicTacToe.cpp
@@ -53,9 +55,9 @@ Bit* TicTacToe::PieceForPlayer(const int playerNumber)
 // setup the game board, this is called once at the start of the game
 //
 void TicTacToe::setUpBoard()
-{
+{  
     setNumberOfPlayers(2);
-
+    //was _gameOptions.AIPlaying
     if (_gameOptions.AIPlaying){
         getPlayerAt(1)->setAIPlayer(true);   // Player 2 = AI
     } else {
@@ -259,7 +261,7 @@ std::string TicTacToe::stateString() const
             if (!bit){
                 state += '0';
             } else {
-                state.append(std::to_string(bit->getOwner()->playerNumber())); //playernumber int as string
+                state.append(std::to_string(bit->getOwner()->playerNumber() + 1)); //playernumber int as string
             }
         }
     }
@@ -316,39 +318,89 @@ void TicTacToe::setStateString(const std::string &s)
 //
 void TicTacToe::updateAI() 
 {
+    //playing against ai
     if (getCurrentPlayer()->playerNumber() != AI_PLAYER){
         return;
     }
 
+    //draw
     if (checkForWinner() != nullptr || checkForDraw()){
         return;
     }
 
-    std::vector<BitHolder*> emptyHolders;
+    
+    int bestScore = -1000;
+    int bestMove = -1;
 
-    for (int y = 0; y < _gameOptions.rowY; y++){
-        for (int x = 0; x < _gameOptions.rowX; x++){
-            if (_grid[y][x].bit() == nullptr){
-                emptyHolders.push_back(&_grid[y][x]);
+    std::string board = stateString();
+
+    for (int i = 0; i < 9; i++){
+        if (board[i] == '0'){
+            board[i] = '2';
+
+            int score = -negamax(board, -1, 1);
+            
+            board[i] = '0';
+
+            if (score > bestScore){
+                bestScore = score;
+                bestMove = i;
             }
         }
     }
 
-    if (emptyHolders.empty()){
-        return;
+    if (bestMove != -1){
+        int x = bestMove % 3;
+        int y = bestMove / 3;
+
+        Bit* bit = PieceForPlayer(AI_PLAYER);
+        bit->setPosition(_grid[y][x].getPosition());
+        _grid[y][x].setBit(bit);
+        endTurn();
     }
-
-    static std::random_device random;
-    static std::mt19937 gen(random());
-    std::uniform_int_distribution<int> dist(0, (int)emptyHolders.size() - 1);
-
-    BitHolder* chosen = emptyHolders[dist(gen)];
-
-    Bit* bit = PieceForPlayer(AI_PLAYER);
-    bit->setPosition(chosen->getPosition());
-    chosen->setBit(bit);
-
-    endTurn();
+   
     // we will implement the AI in the next assignment!
 }
 
+int TicTacToe::evaluateBoard(const std::string& board){
+    static const int wins[8][3] = {
+        {0,1,2},{3,4,5},{6,7,8},
+        {0,3,6},{1,4,7},{2,5,8},
+        {0,4,8},{2,4,6}
+    };
+
+    for (auto& w: wins){
+        char a = board[w[0]];
+        if (a != '0' && a == board[w[1]] && a == board[w[2]]){
+            return (a == '2') ? 1: -1;
+        }
+    }
+    return 0;
+}
+
+int TicTacToe::negamax(std::string board, int player, int depth){
+    int score = evaluateBoard(board);
+
+    if (score != 0){
+        return score * player * (10 - depth);
+    }
+
+    bool noMovesLeft = std::none_of(board.begin(), board.end(), [](char c){return c == '0';});
+
+    if (noMovesLeft){
+        return 0;
+    }
+
+    int bestScore = -1000;
+
+    for (int i = 0; i < 9; i++){
+        if (board[i] == '0'){
+            board[i] = (player == 1) ? '2' : '1';
+
+            bestScore = std::max(bestScore, -negamax(board, -player, depth + 1));
+
+            board[i] = '0';
+        }
+    }
+    return bestScore;
+}

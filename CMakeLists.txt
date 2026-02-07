@@ -48,7 +48,7 @@ else() # Linux
 endif()
 
 add_executable(demo Application.cpp
-                          Logger.cpp
+                          classes/Logger.cpp
                           imgui/imgui_demo.cpp
                           imgui/imgui_draw.cpp
                           imgui/imgui_tables.cpp
@@ -64,6 +64,11 @@ add_executable(demo Application.cpp
                           ${MAIN_FILE}
                           ${IMPL_FILE}
                 )
+
+target_include_directories(demo PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/classes
+)
 
 if(MACOS OR LINUX)
     target_link_libraries(demo ${OPENGL_gl_LIBRARY} glfw)

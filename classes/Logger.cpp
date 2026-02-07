@@ -69,11 +69,11 @@ void Logger::Log(LogLevel level, const std::string& message){
     }
 }
 
-void Logger::Trace(const std::string& msg){ Log(LogLevel::Trace, msg); }
-void Logger::Debug(const std::string& msg){ Log(LogLevel::Debug, msg); }
-void Logger::Info(const std::string& msg){ Log(LogLevel::Info, msg); }
-void Logger::Warning(const std::string& msg){ Log(LogLevel::Warning, msg); }
-void Logger::Error(const std::string& msg){ Log(LogLevel::Error, msg); }
+void Logger::LogTrace(const std::string& msg){ Log(LogLevel::Trace, msg); }
+void Logger::LogDebug(const std::string& msg){ Log(LogLevel::Debug, msg); }
+void Logger::LogInfo(const std::string& msg){ Log(LogLevel::Info, msg); }
+void Logger::LogWarning(const std::string& msg){ Log(LogLevel::Warning, msg); }
+void Logger::LogError(const std::string& msg){ Log(LogLevel::Error, msg); }
 
 void Logger::SetConsoleLevel(LogLevel level){
     sConsoleLevel = level;

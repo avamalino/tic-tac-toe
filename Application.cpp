@@ -22,7 +22,7 @@ namespace ClassGame {
             game->setUpBoard();
 
             Logger::Init("engine.log");
-            Logger::Info("Game started successfully");
+            Logger::LogInfo("Game started successfully");
         }
 
         //
@@ -32,22 +32,22 @@ namespace ClassGame {
         void RenderGame() 
         {
 
-                 Logger::DrawImGui();
+            Logger::DrawImGui();
             Logger::DrawFileConsole();
             if (ImGui::Button("Trace")){
-                Logger::Trace("This is a trace message.");
+                Logger::LogTrace("This is a trace message.");
             }
             if (ImGui::Button("Debug")){
-                Logger::Debug("This is a debug message.");
+                Logger::LogDebug("This is a debug message.");
             }
             if (ImGui::Button("Info")){
-                Logger::Info("This is an info message.");
+                Logger::LogInfo("This is an info message.");
             }
             if (ImGui::Button("Warning")){
-                Logger::Warning("This is a warning message.");
+                Logger::LogWarning("This is a warning message.");
             }
             if (ImGui::Button("Error")){
-                Logger::Error("This is an error message.");
+                Logger::LogError("This is an error message.");
             }
             if (ImGui::Button("Clear Log")){
                 Logger::Clear();
@@ -104,7 +104,7 @@ namespace ClassGame {
         //
         void EndOfTurn() 
         {
-            Logger::Shutdown();
+            //Logger::Shutdown();
 
             Player *winner = game->checkForWinner();
             if (winner)

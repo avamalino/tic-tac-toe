@@ -18,6 +18,8 @@ public:
     // set up the board
     void        setUpBoard() override;
 
+    int         evaluateBoard(const std::string& board);
+    int         negamax(std::string board, int player, int depth);
     Player*     checkForWinner() override;
     bool        checkForDraw() override;
     std::string initialStateString() override;

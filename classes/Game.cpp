@@ -3,6 +3,7 @@
 #include "BitHolder.h"
 #include "Turn.h"
 #include "../Application.h"
+#include "Logger.h"
 
 Game::Game()
 {
@@ -80,6 +81,8 @@ void Game::startGame()
 
 void Game::endTurn()
 {
+	//Logger::LogInfo("Current player:", getCurrentPlayer()->playerNumber());
+
 	_gameOptions.currentTurnNo++;
 	std::string startState = stateString();
 	Turn *turn = new Turn;
@@ -93,8 +96,10 @@ void Game::endTurn()
 
 void Game::scanForMouse()
 {
+	//Logger::LogInfo("we scanning?");
     if (gameHasAI() && getCurrentPlayer()->isAIPlayer()) 
     {
+		//Logger::LogError("you updating?");
         updateAI();
         return;
     }
